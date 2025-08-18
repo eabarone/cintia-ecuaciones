@@ -50,6 +50,142 @@
             transform: scale(1.05);
             box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
         }
+        
+        /* Estilos para el popup de imágenes */
+        .image-container {
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .expand-btn {
+            position: absolute;
+            bottom: 10px;
+            right: 10px;
+            background-color: rgba(34, 197, 94, 0.8); /* green-500 con transparencia */
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            font-size: 20px;
+            opacity: 0;
+            transition: opacity 0.3s, transform 0.3s;
+            z-index: 10;
+        }
+        
+        /* En dispositivos móviles, mostrar siempre el botón */
+        @media (max-width: 768px) {
+            .expand-btn {
+                opacity: 0.9;
+                width: 44px;
+                height: 44px;
+                font-size: 22px;
+                background-color: rgba(34, 197, 94, 0.9);
+                box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+                animation: pulse 2s infinite;
+            }
+        }
+        
+        .image-container:hover .expand-btn {
+            opacity: 1;
+            transform: scale(1.1);
+        }
+        
+        .image-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.8);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+        
+        .image-modal.active {
+            display: flex;
+            opacity: 1;
+        }
+        
+        .modal-content {
+            max-width: 90%;
+            max-height: 90%;
+            animation: zoomIn 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            position: relative;
+        }
+        
+        .modal-content img {
+            max-width: 100%;
+            max-height: 90vh;
+            border: 4px solid white;
+            border-radius: 4px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
+        }
+        
+        /* Optimizaciones para dispositivos móviles */
+        @media (max-width: 768px) {
+            .modal-content {
+                max-width: 90%;
+                animation: slideUpFade 0.3s ease-out;
+                margin-right: 15px; /* Dar más espacio para el botón de cierre */
+            }
+            
+            .modal-content img {
+                border-width: 2px;
+            }
+            
+            .close-modal {
+                top: 10px;
+                right: 10px;
+                width: 36px;
+                height: 36px;
+                position: absolute;
+                z-index: 1010; /* Asegurar que esté por encima de todo */
+            }
+        }
+        
+        /* Animación especial para móviles */
+        @keyframes slideUpFade {
+            from { opacity: 0; transform: translateY(50px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .close-modal {
+            position: absolute;
+            top: -20px;
+            right: -20px;
+            background-color: #ef4444; /* red-500 */
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            font-size: 20px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+        }
+        
+        @keyframes zoomIn {
+            from { opacity: 0; transform: scale(0.8); }
+            to { opacity: 1; transform: scale(1); }
+        }
+        
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
     </style>
 </head>
 <body class="bg-slate-50">
@@ -157,8 +293,9 @@
                             </div>
                             <div>
                                 <div class="mt-4 mb-6 p-4 bg-white border border-green-300 rounded-lg shadow-sm flex flex-col items-center">
-                                    <div class="w-full h-32 sm:h-48 md:h-64 xl:h-80 bg-white  rounded flex items-center justify-center overflow-hidden">
-                                        <img src="img/ecuaciones_1.webp" alt="Solución gráfica ejemplo" class="max-w-full max-h-full object-contain" style="object-fit:contain;" loading="lazy" />
+                                    <div class="w-full h-32 sm:h-48 md:h-64 xl:h-80 bg-white rounded flex items-center justify-center overflow-hidden image-container">
+                                        <img src="img/ecuaciones_1.webp" alt="Solución gráfica ejemplo" class="max-w-full max-h-full object-contain expandable-image" style="object-fit:contain;" loading="lazy" />
+                                        <button class="expand-btn" data-img="img/ecuaciones_1.webp">🔍</button>
                                     </div>
                                 </div>
                                 <h3 class="text-xl font-bold text-green-700 mb-2">¿Cómo se resuelve una ecuación lineal?</h3>
@@ -167,16 +304,18 @@
                             <div class="bg-green-50 border-l-4 border-green-400 p-4 rounded-r-lg">
                                 <h4 class="font-bold text-green-800 mb-2">Ejemplo #1 - Igualdad de lados</h4>
                                 <div class="mt-4 mb-6 p-4 bg-white border border-green-300 rounded-lg shadow-sm flex flex-col items-center">
-                                    <div class="w-full h-32 sm:h-48 md:h-64 xl:h-80 bg-white  rounded flex items-center justify-center overflow-hidden">
-                                        <img src="img/ecuaciones_2.webp" alt="Solución gráfica ejemplo" class="max-w-full max-h-full object-contain" style="object-fit:contain;" loading="lazy" />
+                                    <div class="w-full h-32 sm:h-48 md:h-64 xl:h-80 bg-white rounded flex items-center justify-center overflow-hidden image-container">
+                                        <img src="img/ecuaciones_2.webp" alt="Solución gráfica ejemplo" class="max-w-full max-h-full object-contain expandable-image" style="object-fit:contain;" loading="lazy" />
+                                        <button class="expand-btn" data-img="img/ecuaciones_2.webp">🔍</button>
                                     </div>
                                 </div>
                                 <p class="mb-2">Supongamos que estás en la finca ayudando a contar los sacos de maíz que recogiste con tu familia.<br>
                                 Tu papá te dice:</p>
                                 <blockquote class="italic text-green-700 mb-2">“Entre tú y yo cargamos 10 sacos, pero tú perdiste la cuenta y no te acuerdas cuántos sacos cargaste tú”<br>“Yo cargué 6 sacos, ¿cuántos sacos cargaste tú?”</blockquote>
                                 <div class="mt-4 mb-6 p-4 bg-white border border-green-300 rounded-lg shadow-sm flex flex-col items-center">
-                                    <div class="w-full h-32 sm:h-48 md:h-64 xl:h-80 bg-white  rounded flex items-center justify-center overflow-hidden">
-                                        <img src="img/ecuaciones_3.webp" alt="Solución gráfica ejemplo" class="max-w-full max-h-full object-contain" style="object-fit:contain;" loading="lazy" />
+                                    <div class="w-full h-32 sm:h-48 md:h-64 xl:h-80 bg-white rounded flex items-center justify-center overflow-hidden image-container">
+                                        <img src="img/ecuaciones_3.webp" alt="Solución gráfica ejemplo" class="max-w-full max-h-full object-contain expandable-image" style="object-fit:contain;" loading="lazy" />
+                                        <button class="expand-btn" data-img="img/ecuaciones_3.webp">🔍</button>
                                     </div>
                                 </div>
                                 <p>Entonces, es cierto que <span class="font-mono bg-green-100 px-2 py-1 rounded">10 = x + 6</span>. Por lo que podemos decir que <span class="font-bold text-green-800">x = 4</span> para que la ecuación sea verdadera. <span class="font-bold">¡Bingo!</span> <span class="text-xl">🎉</span> Ahora le puedes decir a tu papá que cargaste <span class="font-bold">4 sacos de maíz</span>.</p>
@@ -184,15 +323,17 @@
                             <div class="bg-green-50 border-l-4 border-green-400 p-4 rounded-r-lg">
                                 <h4 class="font-bold text-green-800 mb-2">Ejemplo #2 - Despeje de Variables</h4>
                                 <div class="mt-4 mb-6 p-4 bg-white border border-green-300 rounded-lg shadow-sm flex flex-col items-center">
-                                    <div class="w-full h-32 sm:h-48 md:h-64 xl:h-80 bg-white  rounded flex items-center justify-center overflow-hidden">
-                                        <img src="img/ecuaciones_4.webp" alt="Solución gráfica ejemplo" class="max-w-full max-h-full object-contain" style="object-fit:contain;" loading="lazy" />
+                                    <div class="w-full h-32 sm:h-48 md:h-64 xl:h-80 bg-white rounded flex items-center justify-center overflow-hidden image-container">
+                                        <img src="img/ecuaciones_4.webp" alt="Solución gráfica ejemplo" class="max-w-full max-h-full object-contain expandable-image" style="object-fit:contain;" loading="lazy" />
+                                        <button class="expand-btn" data-img="img/ecuaciones_4.webp">🔍</button>
                                     </div>
                                 </div>
                                 <p class="mb-2">Pedro es un agricultor que vive en un municipio de Córdoba y quiere empacar sacos de mango. Cada saco pesa 4 kg, y tiene 20 kg de mango. ¿Cuántos sacos puede llenar si cada uno debe pesar lo mismo?</p>
                                 <p>La ecuación sería: <span class="font-mono bg-green-100 px-2 py-1 rounded">4x = 20</span>.</p>
                                 <div class="mt-4 mb-6 p-4 bg-white border border-green-300 rounded-lg shadow-sm flex flex-col items-center">
-                                    <div class="w-full h-32 sm:h-48 md:h-64 xl:h-80 bg-white  rounded flex items-center justify-center overflow-hidden">
-                                        <img src="img/ecuaciones_5.webp" alt="Solución gráfica ejemplo" class="max-w-full max-h-full object-contain" style="object-fit:contain;" loading="lazy" />
+                                    <div class="w-full h-32 sm:h-48 md:h-64 xl:h-80 bg-white rounded flex items-center justify-center overflow-hidden image-container">
+                                        <img src="img/ecuaciones_5.webp" alt="Solución gráfica ejemplo" class="max-w-full max-h-full object-contain expandable-image" style="object-fit:contain;" loading="lazy" />
+                                        <button class="expand-btn" data-img="img/ecuaciones_5.webp">🔍</button>
                                     </div>
                                 </div>
                                 <p>Entonces decimos que la ecuación se cumple de ambos lados debido a que son iguales y concluimos que debo llenar <span class="font-bold text-green-800">5 sacos</span> de 4 kilogramos para empacar 20 kilogramos de mango. <span class="text-xl">🥭</span></p>
@@ -210,16 +351,18 @@
                                 <p class="mb-2">Una <strong>desigualdad lineal</strong> es parecida a una ecuación, pero en este caso los dos lados de la frase no están separados por un signo igual (=) sino por otros símbolos que nos ayudan a determinar si un lado es mayor, menor o igual que el otro.</p>
                                 <p>Por ejemplo: <span class="font-mono bg-green-100 px-2 py-1 rounded">5x &lt; 20</span>, aquí estamos diciendo que 5 veces x es menor que 20.</p>
                                 <div class="mt-4 mb-6 p-4 bg-white border border-green-300 rounded-lg shadow-sm flex flex-col items-center">
-                                    <div class="w-full h-32 sm:h-48 md:h-64 xl:h-80 bg-white  rounded flex items-center justify-center overflow-hidden">
-                                        <img src="img/desigualdades_1.webp" alt="Solución ejercicio 1" class="max-w-full max-h-full object-contain" loading="lazy">
+                                    <div class="w-full h-32 sm:h-48 md:h-64 xl:h-80 bg-white rounded flex items-center justify-center overflow-hidden image-container">
+                                        <img src="img/desigualdades_1.webp" alt="Solución ejercicio 1" class="max-w-full max-h-full object-contain expandable-image" loading="lazy">
+                                        <button class="expand-btn" data-img="img/desigualdades_1.webp">🔍</button>
                                     </div>
                                 </div>
                             </div>
                             <div class="bg-green-50 border-l-4 border-green-400 p-4 rounded-r-lg">
                                 <p>Las desigualdades nos ayudan cuando no queremos o no podemos tener un resultado exacto, sino que nos interesa saber hasta dónde se puede llegar sin pasarnos de un límite.</p>
                                 <div class="mt-4 mb-6 p-4 bg-white border border-green-300 rounded-lg shadow-sm flex flex-col items-center">
-                                    <div class="w-full h-32 sm:h-48 md:h-64 xl:h-80 bg-white  rounded flex items-center justify-center overflow-hidden">
-                                        <img src="img/desigualdades_2.webp" alt="Solución ejercicio 1" class="max-w-full max-h-full object-contain" loading="lazy">
+                                    <div class="w-full h-32 sm:h-48 md:h-64 xl:h-80 bg-white rounded flex items-center justify-center overflow-hidden image-container">
+                                        <img src="img/desigualdades_2.webp" alt="Solución ejercicio 1" class="max-w-full max-h-full object-contain expandable-image" loading="lazy">
+                                        <button class="expand-btn" data-img="img/desigualdades_2.webp">🔍</button>
                                     </div>
                                 </div>
                             </div>
@@ -227,8 +370,9 @@
                                 <h3 class="text-xl font-bold text-green-700 mb-2">¿Cómo se resuelve una desigualdad?</h3>
                                 <p>La desigualdad se resuelve tratando de encontrar qué valores puede tener una letra (como x) para que la frase matemática sea verdadera. Es como resolver una ecuación, pero en lugar de buscar una sola respuesta, vamos a encontrar todas las posibles respuestas que cumplen la condición.</p>
                                 <div class="mt-4 mb-6 p-4 bg-white border border-green-300 rounded-lg shadow-sm flex flex-col items-center">
-                                    <div class="w-full h-32 sm:h-48 md:h-64 xl:h-80 bg-white  rounded flex items-center justify-center overflow-hidden">
-                                        <img src="img/desigualdades_3.webp" alt="Solución ejercicio 1" class="max-w-full max-h-full object-contain" loading="lazy">
+                                    <div class="w-full h-32 sm:h-48 md:h-64 xl:h-80 bg-white rounded flex items-center justify-center overflow-hidden image-container">
+                                        <img src="img/desigualdades_3.webp" alt="Solución ejercicio 1" class="max-w-full max-h-full object-contain expandable-image" loading="lazy">
+                                        <button class="expand-btn" data-img="img/desigualdades_3.webp">🔍</button>
                                     </div>
                                 </div>
                             </div>
@@ -272,8 +416,9 @@
                                 <h4 class="font-bold text-green-800 mb-2">Ejemplo #1</h4>
                                 <p>Imagina que estás en el centro y tienes <span class="font-bold">$100 pesos</span>, quieres comprar unas camisetas y al entrar al almacén la vendedora te dice que cada camiseta cuesta <span class="font-bold">$20</span>. ¿Cuántas camisetas puedes comprar sin pasarte del presupuesto?</p>
                                 <div class="mt-4 mb-6 p-4 bg-white border border-green-300 rounded-lg shadow-sm flex flex-col items-center">
-                                    <div class="w-full h-32 sm:h-48 md:h-64 xl:h-80 bg-white  rounded flex items-center justify-center overflow-hidden">
-                                        <img src="img/desigualdades_4.webp" alt="Solución ejercicio 1" class="max-w-full max-h-full object-contain" loading="lazy">
+                                    <div class="w-full h-32 sm:h-48 md:h-64 xl:h-80 bg-white rounded flex items-center justify-center overflow-hidden image-container">
+                                        <img src="img/desigualdades_4.webp" alt="Solución ejercicio 1" class="max-w-full max-h-full object-contain expandable-image" loading="lazy">
+                                        <button class="expand-btn" data-img="img/desigualdades_4.webp">🔍</button>
                                     </div>
                                 </div>
                             </div>
@@ -281,8 +426,9 @@
                                 <h4 class="font-bold text-green-800 mb-2">Ejemplo #2</h4>
                                 <p>Imagina que tienes una finca con <span class="font-bold">10 cerdos</span>, y cada cerdo necesita al menos <span class="font-bold">3 kilos de alimento</span> al día para estar bien alimentado. Tú eres el encargado de preparar la comida y tienes que asegurarte de que no les falte comida en todo el día.</p>
                                 <div class="mt-4 mb-6 p-4 bg-white border border-green-300 rounded-lg shadow-sm flex flex-col items-center">
-                                    <div class="w-full h-32 sm:h-48 md:h-64 xl:h-80 bg-white  rounded flex items-center justify-center overflow-hidden">
-                                        <img src="img/desigualdades_5.webp" alt="Solución ejercicio 1" class="max-w-full max-h-full object-contain" loading="lazy">
+                                    <div class="w-full h-32 sm:h-48 md:h-64 xl:h-80 bg-white rounded flex items-center justify-center overflow-hidden image-container">
+                                        <img src="img/desigualdades_5.webp" alt="Solución ejercicio 1" class="max-w-full max-h-full object-contain expandable-image" loading="lazy">
+                                        <button class="expand-btn" data-img="img/desigualdades_5.webp">🔍</button>
                                     </div>
                                 </div>
                             </div>
@@ -649,20 +795,99 @@ document.addEventListener('DOMContentLoaded', () => {
             });
         }
     });
-    // JS simple para acordeón
+</script>
+
+<script>
+    // JS para acordeón con desplazamiento automático
     document.querySelectorAll('.accordion-btn').forEach(btn => {
         btn.addEventListener('click', function() {
             const panel = document.querySelector(this.getAttribute('data-target'));
             const isOpen = panel.classList.contains('block');
             document.querySelectorAll('.accordion-panel').forEach(p => p.classList.add('hidden'));
             document.querySelectorAll('.accordion-panel').forEach(p => p.classList.remove('block'));
+            
             if (!isOpen) {
                 panel.classList.remove('hidden');
                 panel.classList.add('block');
+                // Cambiar el símbolo del botón
+                this.querySelector('span').textContent = '➖';
+                
+                // Desplazamiento suave hacia el botón del acordeón desplegado
+                setTimeout(() => {
+                    this.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                }, 100); // Pequeño retraso para asegurar que el panel esté visible
+            } else {
+                // Cambiar el símbolo del botón
+                this.querySelector('span').textContent = '➕';
+            }
+            
+            // Actualizar todos los demás botones
+            document.querySelectorAll('.accordion-btn').forEach(otherBtn => {
+                if (otherBtn !== this) {
+                    otherBtn.querySelector('span').textContent = '➕';
+                }
+            });
+        });
+    });
+</script>
+
+<script>
+    // JS para modal de imagen
+    document.addEventListener('DOMContentLoaded', function() {
+        const modal = document.getElementById('imageModal');
+        const modalImg = document.getElementById('modalImage');
+        const closeBtn = document.getElementById('closeModal');
+        const expandBtns = document.querySelectorAll('.expand-btn');
+        
+        // Abrir modal al hacer clic en el botón de expandir
+        expandBtns.forEach(btn => {
+            btn.addEventListener('click', function(e) {
+                e.preventDefault(); // Prevenir comportamiento por defecto
+                e.stopPropagation(); // Evitar propagación del evento
+                
+                const imgSrc = this.getAttribute('data-img');
+                modalImg.src = imgSrc;
+                modal.classList.add('active');
+                document.body.style.overflow = 'hidden'; // Evitar scroll en el fondo
+                
+                // Agregar feedback táctil en dispositivos móviles si está disponible
+                if (window.navigator && window.navigator.vibrate) {
+                    window.navigator.vibrate(50); // Vibración sutil de 50ms
+                }
+            });
+        });
+        
+        // Cerrar modal al hacer clic en el botón de cerrar
+        closeBtn.addEventListener('click', function() {
+            modal.classList.remove('active');
+            document.body.style.overflow = ''; // Restaurar scroll
+        });
+        
+        // Cerrar modal al hacer clic fuera de la imagen
+        modal.addEventListener('click', function(e) {
+            if (e.target === modal) {
+                modal.classList.remove('active');
+                document.body.style.overflow = ''; // Restaurar scroll
+            }
+        });
+        
+        // Cerrar modal con la tecla ESC
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape' && modal.classList.contains('active')) {
+                modal.classList.remove('active');
+                document.body.style.overflow = ''; // Restaurar scroll
             }
         });
     });
 </script>
+
+    <!-- Modal para ampliar imágenes -->    
+    <div id="imageModal" class="image-modal">
+        <div class="modal-content">
+            <img id="modalImage" src="" alt="Imagen ampliada">
+            <button class="close-modal" id="closeModal">&times;</button>
+        </div>
+    </div>
 
 </body>
 </html>
